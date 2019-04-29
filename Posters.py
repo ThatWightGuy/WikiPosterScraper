@@ -61,6 +61,3 @@ class Poster:
         with open(file_dest, 'wb') as file:
             file.write(self.__get_url_content(url))
 
-if __name__ == '__main__':
-    poster = Poster('Who Killed Captain Alex?', year=2010)
-    poster.save_poster(poster.get_poster_url(), destination='test')
