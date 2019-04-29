@@ -20,7 +20,7 @@ class Poster:
         try:
             return wiki.page(self.search, auto_suggest=True)
         except PageError:
-            print('No Page Found. Try adding a year to your query or checking if information is correct.')
+            print('No Page Found. Try adding a year to your query or check if information is correct.')
             return wiki.WikipediaPage('Main_Page')
 
     def __get_url_content(self, url):
@@ -42,14 +42,25 @@ class Poster:
 
         return good_response
 
-    def get_poster(self):
-        query_dict = {'PosterUrl': '', 'PageUrl': ''}
-
+    def get_poster_url(self):
         try:
             page = bs(self.__get_url_content(self.wiki_page.url), 'html.parser')
-            query_dict['PosterUrl'] = 'https:%s' % page.find('table', class_='infobox vevent').find('img')['src']
-            query_dict['PageUrl'] = self.wiki_page.url
+            return 'https:%s' % page.find('table', class_='infobox vevent').find('img')['src']
         except AttributeError:
-            print('No Poster Found On Page. Try adding a year to your query or checking if information is correct.')
+            print('No Poster Found On Page. Try adding a year to your query or check if information is correct.')
+            return ''
 
-        return query_dict
+    def save_poster(self, url, destination='', filename=''):
+        file_ext = url.split('/')[-1].split('.')
+
+        if filename is '':
+            file_dest = '/'.join([destination, '.'.join(file_ext)])
+        else:
+            file_dest = '/'.join([destination, '.'.join([filename, file_ext[-1]])])
+
+        with open(file_dest, 'wb') as file:
+            file.write(self.__get_url_content(url))
+
+if __name__ == '__main__':
+    poster = Poster('Who Killed Captain Alex?', year=2010)
+    poster.save_poster(poster.get_poster_url(), destination='test')
